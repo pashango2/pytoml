@@ -6,17 +6,17 @@ if sys.version_info[0] == 2:
 else:
     _chr = chr
 
-def load(fin, translate=lambda t, x, v: v):
-    return loads(fin.read(), translate=translate, filename=fin.name)
+def load(fin, translate=lambda t, x, v: v, _dict=dict):
+    return loads(fin.read(), translate=translate, filename=fin.name, _dict=_dict)
 
-def loads(s, filename='<string>', translate=lambda t, x, v: v):
+def loads(s, filename='<string>', translate=lambda t, x, v: v, _dict=dict):
     if isinstance(s, bytes):
         s = s.decode('utf-8')
 
     s = s.replace('\r\n', '\n')
 
-    root = {}
-    tables = {}
+    root = _dict()
+    tables = _dict()
     scope = root
 
     src = _Source(s, filename=filename)
@@ -73,7 +73,7 @@ def loads(s, filename='<string>', translate=lambda t, x, v: v):
 
     def merge_tables(scope, tables):
         if scope is None:
-            scope = {}
+            scope = _dict()
         for k in tables:
             if k in scope:
                 error('key_table_conflict')
