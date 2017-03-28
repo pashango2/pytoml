@@ -34,7 +34,7 @@ def loads(s, filename='<string>', translate=lambda t, x, v: v, _dict=dict):
                 error('array-type-mismatch')
             value = [process_value(item) for item in value]
         elif kind == 'table':
-            value = dict([(k, process_value(value[k])) for k in value])
+            value = _dict([(k, process_value(value[k])) for k in value])
         return translate(kind, text, value)
 
     for kind, value, pos in ast:
@@ -50,19 +50,19 @@ def loads(s, filename='<string>', translate=lambda t, x, v: v, _dict=dict):
                 if isinstance(cur.get(name), list):
                     d, cur = cur[name][-1]
                 else:
-                    d, cur = cur.setdefault(name, (None, {}))
+                    d, cur = cur.setdefault(name, (None, _dict()))
 
-            scope = {}
+            scope = _dict()
             name = value[-1]
             if name not in cur:
                 if is_table_array:
-                    cur[name] = [(scope, {})]
+                    cur[name] = [(scope, _dict())]
                 else:
-                    cur[name] = (scope, {})
+                    cur[name] = (scope, _dict())
             elif isinstance(cur[name], list):
                 if not is_table_array:
                     error('table_type_mismatch')
-                cur[name].append((scope, {}))
+                cur[name].append((scope, _dict()))
             else:
                 if is_table_array:
                     error('table_type_mismatch')
